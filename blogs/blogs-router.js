@@ -5,17 +5,6 @@ const router = express.Router();
 const Blogs = require('../data/db');
 
 
-
-// router.get('/', (req, res) => {
-//     Blogs.find()
-//     .then(posts => {
-//         res.status(200).json(posts);
-//     })
-//     .catch(err => {
-//         err.status(500).json({ error: "The users information could not be retrieved." })
-//     })
-// })
-
 router.post('/', (req, res) => {
     const newPost = req.body;
     console.log('in the post')
@@ -55,6 +44,46 @@ router.post('/:id/comments', (req, res) => {
                 res.status(500).json({ error: "There was an error while saving the comment to the database" });
             })
         }
+});
+
+router.get('/', (req, res) => {
+    Blogs.find()
+        .then(posts => {
+            res.status(200).json(posts);
+        })
+        .catch(err => {
+            res.status(500).json({ error: "The posts information could not be retrieved." });
+        })
+});
+
+router.get('/:id', (req, res) => {
+    // const userId = req.params.id;
+
+    Blogs.findById(req.params.id)
+        .then(user => {
+            if (user.length > 0 ) {
+                res.status(200).json(user);
+            } else {
+                res.status(404).json({ message: "The post with the specified ID does not exist." });
+            }
+        })
+        .catch(err => {
+            res.status(500).json({ error: "The post information could not be retrieved." });
+        })
+})
+
+router.get('/:id/comments', (req, res) => {
+    Blogs.findPostComments(req.params.id)
+        .then(user => {
+            if (user) {
+                res.status(200).json(user);
+            } else {
+                res.status(404).json({ message: "The post with the specified ID does not exist." });
+            }
+        })
+        .catch(err => {
+            res.status(500).json({ message: "The post with the specified ID does not exist." });
+        }) 
 })
 
 module.exports = router;
